@@ -7,7 +7,9 @@
     "providers": [
         "Modules\\Basket\\Providers\\BasketServiceProvider"
     ],
-    "aliases": {},
+    "aliases": {
+        "Basket":"Modules\\Basket\\Facades\\Basket"
+    },
     "files": [],
     "requires": []
 }

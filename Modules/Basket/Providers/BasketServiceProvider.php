@@ -2,6 +2,7 @@
 
 namespace Modules\Basket\Providers;
 
+use Modules\Basket\Services\BasketService;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
 
@@ -38,6 +39,9 @@ class BasketServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->register(RouteServiceProvider::class);
+        $this->app->singleton('basket' , function() {
+            return new BasketService();
+        });
     }
 
     /**

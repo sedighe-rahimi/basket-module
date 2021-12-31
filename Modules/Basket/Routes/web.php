@@ -11,6 +11,7 @@
 |
 */
 
-Route::prefix('basket')->group(function() {
-    Route::get('/', 'BasketController@index');
-});
+Route::get('/basket/index/{cacheName}', 'BasketController@all')->name('basket.index');
+Route::get('/basket/add/{cacheName}/{id}' , 'BasketController@addCount')->name('basket.addCount');
+Route::get('/basket/decrease/{decCount}/{cacheName}/{id}' , 'BasketController@decreaseCount')->name('basket.decCount');
+
