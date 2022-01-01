@@ -15,7 +15,7 @@ class BasketController extends Controller
      */
     public function all($cacheName)
     {
-        $basketItems = unserialize(cache()->get($cacheName));
+        $basketItems = Basket::all($cacheName);
         
         if( ! $basketItems ) return back();
 
@@ -30,29 +30,7 @@ class BasketController extends Controller
     
     public function addCount($cacheName , $id)
     {
-        if( ! is_null( $items = cache()->get($cacheName) ) ){
-            $items      = unserialize($items);
-            
-            foreach( $items as $key => $item )
-            {
-                if( $id == $item['id'] ){
-                    $existItem = true;
-
-                    $basketData = [
-                        'id'        => $item['id'],
-                        'title'     => $item['title'],
-                        'count'     => 1,
-                        'price'     => $item['price'],
-                        'instance'  => $item['instance']
-                    ];
-                    
-                }
-            }
-        }
-
-        if( isset($basketData) ){
-            Basket::add($cacheName , $basketData['instance'] , $basketData);
-        }
+        Basket::addCount($cacheName , $id);
 
         return back();
     }
@@ -61,27 +39,10 @@ class BasketController extends Controller
     
     public function decreaseCount($decCount , $cacheName , $id)
     {
-        if( ! is_null( $items = cache()->get($cacheName) ) ){
-            $items      = unserialize($items);
-            
-            foreach( $items as $key => $item )
-            {
-                if( $id == $item['id'] ){
-                    $existItem = true;
+        Basket::decreaseCount($cacheName , $id , $decCount);
 
-                    $basketData = [
-                        'id'        => $item['id'],
-                    ];
-                    
-                }
-            }
-        }
-
-        if( isset($basketData) ){
-            Basket::decreaseCount($cacheName , $decCount , $basketData);
-            if( is_null( $items = cache()->get($cacheName) ) ){
-                return redirect('/');
-            }
+        if( ! Basket::all($cacheName) ){
+            return redirect('/');
         }
 
         return back();

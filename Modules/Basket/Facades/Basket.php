@@ -6,10 +6,10 @@ use Illuminate\Support\Facades\Facade;
 
 /**
  * Class basket
- * @method static basket add(string $listName , array $value)
- * @method static bool has($id)
- * @method static Collection all();
- * @method static array get($id);
+ * @method static basket add(string $cacheName , collection $instance , array $dataArray)
+ * @method static basket all(string $cacheName)
+ * @method static basket addCount(string $cacheName , int $id)
+ * @method static basket decreaseCount(string $cacheName , int $decCount = 1 , array $dataArray)
  */
 class Basket extends Facade
 {

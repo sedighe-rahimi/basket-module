@@ -37,17 +37,19 @@
                         </div>
                     </div>
                     
+                    <div class="row border-top border-bottom">
+                        <div class="row main align-items-center text-center">
+                            <div class="col-2"></div>
+                            <div class="col">
+                                <div class="row text-muted">عنوان</div>
+                            </div>
+                            <div class="col">تعداد</div>
+                            <div class="col">قیمت</div>
+                            <div class="col">قیمت کل</div>
+                        </div>
+                    </div>
                     @foreach( $basketItems as $item )
                         <div class="row border-top border-bottom">
-                            <div class="row main align-items-center text-center">
-                                <div class="col-2"></div>
-                                <div class="col">
-                                    <div class="row text-muted">عنوان</div>
-                                </div>
-                                <div class="col">تعداد</div>
-                                <div class="col">قیمت</div>
-                                <div class="col">قیمت کل</div>
-                            </div>
                             <div class="row main align-items-center text-center">
                                 <div class="col-2"><img class="img-fluid" src="/images/bird.jpg"></div>
                                 <div class="col">

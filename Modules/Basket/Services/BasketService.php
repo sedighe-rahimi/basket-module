@@ -7,11 +7,17 @@ use Illuminate\Support\Facades\Cookie;
 class BasketService
 {
     protected $timeout = 360;
-
+    
+    /**
+     * Add new item to cache or increase count of exist item
+     * @param string $cacheName name of cache is set - this is useful for when we want have different type of items in basket
+     * @param object $instance model of item
+     * @param array $dataArray data of item info
+     * @return bool
+     */
     public function add($cacheName , $instance , $dataArray)
     {
         // sample : proruct for Model\App\Product
-        // $itemsModelName = strtolower(last(explode('\\' , get_class($instance))));
 
         if( key_exists('id' , $dataArray) && key_exists('instance' , $dataArray) && key_exists('title' , $dataArray) && key_exists('price' , $dataArray) && key_exists('count' , $dataArray) )
         {
@@ -20,14 +26,7 @@ class BasketService
             return false;
         }
 
-        $items = cache()->remember($cacheName , $this->timeout , function() use ($data) {
-            $items = array();
-            array_push($items , $data);
-            return serialize($items);
-        });
-
-        if( ! is_null( $items = cache()->get($cacheName) ) ){
-            $items      = unserialize($items);
+        if( $items = $this->all($cacheName) ){
             $newItems   = array();
             $existItem  = false;
 
@@ -54,16 +53,12 @@ class BasketService
             }
 
             $serializedItems = serialize($items);
+        }else{
+            $items = array();
+            array_push($items , $data);
+            $serializedItems = serialize($items);
         }
         
-        
-        // if( ! is_null($items) ){
-        //     cache()->set($cacheName , $items , $this->timeout);
-        // }else{
-        //     cache()->forget($cacheName);
-        //     return redirect(route('basket.index' , ['cacheName' => $cacheName]));
-        // }
-           
         if( ! empty($items) ){
             cache()->set($cacheName , $serializedItems , $this->timeout);
         }else{
@@ -74,24 +69,45 @@ class BasketService
         return true;        
     }
 
-    
-
-    public function decreaseCount($cacheName , $decCount = 1 , $dataArray)
+    public function all($cacheName)
     {
-        if( key_exists('id' , $dataArray))
-        {
-            $data = $dataArray;
-        }else{
-            return false;
+        return unserialize(cache()->get($cacheName));
+    }
+
+    public function addCount($cacheName , $id)
+    {
+        if( $items = $this->all($cacheName) ){
+            foreach( $items as $key => $item )
+            {
+                if( $id == $item['id'] ){
+                    $existItem = true;
+
+                    $basketData = [
+                        'id'        => $item['id'],
+                        'title'     => $item['title'],
+                        'count'     => 1,
+                        'price'     => $item['price'],
+                        'instance'  => $item['instance']
+                    ];
+                    
+                }
+            }
         }
 
-        if( ! is_null( $items = cache()->get($cacheName) ) ){
-            $items      = unserialize($items);
+        if( isset($basketData) ){
+            $this->add($cacheName , $basketData['instance'] , $basketData);
+        }
+    }
+
+
+    public function decreaseCount($cacheName , $id , $decCount = 1)
+    {
+        if( $items = $this->all($cacheName) ){
             $newItems   = array();
 
             foreach( $items as $key => $item )
             {
-                if( $dataArray['id'] == $item['id'] ){
+                if( $id == $item['id'] ){
                     $newCount = $item['count'] - $decCount;
                     if( $newCount > 0 ){
                         $item['count'] = $newCount;
